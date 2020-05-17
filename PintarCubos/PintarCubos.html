@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fichas</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="js/three.js"></script>
+    <script src="js/controls/OrbitControls.js"></script>
+    <script src="js/csg.js"></script>
+    <script src="js/THREE.CSG.js"></script>
+    <script>
+        var scene, aspect, camera, renderer, controls;
+        var fan;
+        var strip;
+        var tapa;
+        var startTime = Date.now();
+        var voxelTransparente,geoVoxel,matVoxel;
+        var cuboFinal, geoVoxelp2 ,matVoxel2;
+        var plano,raycast,mousePosX,mousePosY,mousePos;
+        var interseccion, objetos=[], objetoInterseccion;
+
+
+
+init();
+animate();
+
+function init() {
+    //INICIALIZACIÓN
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+    aspect = window.innerWidth / window.innerHeight;
+    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  ///ELEMENTOS COMUNES
+    var size = 10;
+    var arrowSize = 1;
+    var divisions = size;
+    var origin = new THREE.Vector3(0, 0, 0);
+    var x = new THREE.Vector3(1, 0, 0);
+    var y = new THREE.Vector3(0, 1, 0);
+    var z = new THREE.Vector3(0, 0, 1);
+    var color = new THREE.Color(0x333333);
+    var colorR = new THREE.Color(0xAA3333);
+    var colorG = new THREE.Color(0x33AA33);
+    var colorB = new THREE.Color(0x333366);
+
+    //CREAR LAS GRILLAS PARA EL ESCENARIO
+    var axesHelper = new THREE.AxesHelper(size);
+    scene.add(axesHelper);
+
+    var gridHelperXZ = new THREE.GridHelper(size, divisions, color, color);
+    scene.add(gridHelperXZ);
+
+    //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+    gridHelperXZ.rotateOnWorldAxis(y, THREE.Math.degToRad(90));  
+
+    //CREAR ILUMINACIÓN
+    var ambient = new THREE.AmbientLight(0xffffff, 2);
+    scene.add(ambient);
+
+    var pointLight = new THREE.PointLight(0xffffff, 1, 100);
+    pointLight.position.set(-15, -12, 15);
+    scene.add(pointLight);
+
+    var pointLight = new THREE.PointLight(0xffffff, .5, 100);
+    pointLight.position.set(15, -12, -15);
+    scene.add(pointLight);
+    
+    //FONDO
+    
+    const loader = new THREE.TextureLoader();
+            loader.load('Fondo.jpg' , function(texture)
+            {
+             scene.background = texture;  
+            });  
+    
+    //CAMARAS
+
+    camera.position.x = 8;
+    camera.position.y = 8;
+    camera.position.z = 12;
+
+
+    //GEOMETRIAS
+    matVoxel2 = new THREE.MeshNormalMaterial({ color: 0x1E90FF, metalness: 0.5, roughness: 0.1 });
+
+
+    var geoCubo = new THREE.BoxGeometry(2, 2, 2);
+    var geoCubo1 = new THREE.BoxGeometry(1.7, 1.7, 1.7);
+    var geoCone = new THREE.ConeGeometry(1, 1, 4);
+
+    var Cubo = new THREE.Mesh(geoCubo, matVoxel2);
+    var Cubo1 = new THREE.Mesh(geoCubo1, matVoxel2);
+    var Cubo2 = new THREE.Mesh(geoCubo1, matVoxel2);
+    var Cubo3 = new THREE.Mesh(geoCubo1, matVoxel2);
+    var Cubo4 = new THREE.Mesh(geoCubo1, matVoxel2);
+    var Cubo5 = new THREE.Mesh(geoCubo1, matVoxel2);
+    var Cubo6 = new THREE.Mesh(geoCubo1, matVoxel2);
+    var Cubo7 = new THREE.Mesh(geoCubo1, matVoxel2);
+    var Cone = new THREE.Mesh(geoCone, matVoxel2);
+    var Cone1 = new THREE.Mesh(geoCone, matVoxel2);
+
+
+    //MOVER GEOMETRIAS
+
+    Cubo.position.y = 1.5;
+
+    Cubo1.position.x = 1.4;
+    Cubo1.position.y = 1.5;
+
+    Cubo2.position.x = -1.4;
+    Cubo2.position.y = 1.5;
+
+    Cubo3.position.z = -1.4;
+    Cubo3.position.y = 1.5;
+
+    Cubo4.position.z = 1.4;
+    Cubo4.position.y = 1.5;
+
+    Cubo5.position.y = 3;
+
+    Cone.position.y = 2;
+
+    Cone1.position.y = 1;
+    Cone1.rotation.x = 15.704;
+
+    //COVERTIR A CSG
+    var CuboCSG = THREE.CSG.fromMesh(Cubo);
+    var Cubo1CSG = THREE.CSG.fromMesh(Cubo1);
+    var Cubo2CSG = THREE.CSG.fromMesh(Cubo2);
+    var Cubo3CSG = THREE.CSG.fromMesh(Cubo3);
+    var Cubo4CSG = THREE.CSG.fromMesh(Cubo4);
+    var Cubo5CSG = THREE.CSG.fromMesh(Cubo5);
+    var Cubo6CSG = THREE.CSG.fromMesh(Cubo6);
+    var ConeCSG = THREE.CSG.fromMesh(Cone);
+    //OPERACIONES CSG
+
+    cuboFinal= CuboCSG.subtract(Cubo1CSG).subtract(Cubo2CSG).subtract(Cubo3CSG).subtract(Cubo4CSG).subtract(Cubo5CSG).subtract(Cubo6CSG).union(ConeCSG);
+
+    
+    var materialTransparente = new THREE.MeshStandardMaterial({ color: 0x0000FF, metalness: 0.5, roughness: 0.1, side: THREE.DoubleSide, transparent: true, opacity: 0.5});
+    var materialPlano = new THREE.MeshStandardMaterial({ color: 0xeeeeee, metalness: 0.5, roughness: 0.1, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
+    matVoxel = new THREE.MeshStandardMaterial({ visible: false });
+
+    var geoCuboT = new THREE.BoxGeometry(1, 1, 1);
+    var geoCuboTr = new THREE.BoxGeometry(10, 0.01, 10);
+    geoVoxel = new THREE.BoxGeometry(1, 1, 1);
+
+    plano = new THREE.Mesh(geoCuboTr, materialPlano);
+    voxelTransparente = new THREE.Mesh(geoCuboT, materialTransparente);
+    
+
+    raycast = new THREE.Raycaster();
+    mousePos = new THREE.Vector2();
+
+    scene.add(plano);
+    scene.add(voxelTransparente);
+    objetos.push(plano);
+
+    document.addEventListener('mousemove', onDocumentMouseMove, false);
+    document.addEventListener('mousedown', onDocumentMouseDown, false);
+}
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    render();
+}
+function render() {
+    renderer.render(scene, camera);
+}
+
+function onDocumentMouseMove(e){
+    e.preventDefault();
+    mousePosX = (event.clientX / window.innerWidth) * 2 - 1;
+    mousePosY = - (event.clientY / window.innerHeight) * 2 + 1 ;
+    mousePos = new THREE.Vector2(mousePosX, mousePosY);
+    raycast.setFromCamera(mousePos, camera);
+    interseccion = raycast.intersectObjects(objetos);
+
+    if(interseccion.length > 0){
+        objetoInterseccion = interseccion[0];
+        if (objetoInterseccion.face.normal.y ==-1 ){
+            voxelTransparente.position.copy(objetoInterseccion.point).add(objetoInterseccion.face.normal);
+            voxelTransparente.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        if (objetoInterseccion.face.normal.y == 1) {
+            voxelTransparente.position.copy(objetoInterseccion.point);
+            voxelTransparente.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        if (objetoInterseccion.face.normal.x == -1) {
+            voxelTransparente.position.copy(objetoInterseccion.point).add(objetoInterseccion.face.normal);
+            voxelTransparente.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        if (objetoInterseccion.face.normal.x == 1) {
+            voxelTransparente.position.copy(objetoInterseccion.point);
+            voxelTransparente.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        if (objetoInterseccion.face.normal.z == -1) {
+            voxelTransparente.position.copy(objetoInterseccion.point).add(objetoInterseccion.face.normal);
+            voxelTransparente.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        if (objetoInterseccion.face.normal.z == 1) {
+            voxelTransparente.position.copy(objetoInterseccion.point);
+            voxelTransparente.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+    }
+    render();
+}
+
+function onDocumentMouseDown(e){
+    e.preventDefault();
+    mousePosX = (event.clientX / window.innerWidth) * 2 - 1;
+    mousePosY = - (event.clientY / window.innerHeight) * 2 + 1;
+    mousePos = new THREE.Vector2(mousePosX, mousePosY);
+    raycast.setFromCamera(mousePos, camera);
+    interseccion = raycast.intersectObjects(objetos);
+
+    if (interseccion.length > 0) {
+        var Ficha = THREE.CSG.toMesh(cuboFinal);
+        Ficha.material = matVoxel2; 
+        Ficha.applyMatrix(new THREE.Matrix4().makeScale(0.5, 0.5, 0.5));
+
+        var voxel = new THREE.Mesh(geoVoxel, matVoxel);
+        objetoInterseccion = interseccion[0];
+
+        if (objetoInterseccion.face.normal.y == -1){
+            Ficha.position.copy(objetoInterseccion.point).add(objetoInterseccion.face.normal);
+            Ficha.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+            Ficha.position.y = Ficha.position.y -0.75;
+
+            voxel.position.copy(objetoInterseccion.point).add(objetoInterseccion.face.normal);
+            voxel.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        } 
+        if (objetoInterseccion.face.normal.y == 1) {
+            Ficha.position.copy(objetoInterseccion.point);
+            Ficha.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+            Ficha.position.y = Ficha.position.y - 0.75;
+            
+            voxel.position.copy(objetoInterseccion.point);
+            voxel.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        if (objetoInterseccion.face.normal.x == -1) {
+            Ficha.position.copy(objetoInterseccion.point).add(objetoInterseccion.face.normal);
+            Ficha.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+            Ficha.position.y = Ficha.position.y - 0.75;
+
+            voxel.position.copy(objetoInterseccion.point).add(objetoInterseccion.face.normal);
+            voxel.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        if (objetoInterseccion.face.normal.x == 1) {
+            Ficha.position.copy(objetoInterseccion.point);
+            Ficha.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+            Ficha.position.y = Ficha.position.y - 0.75;
+
+            voxel.position.copy(objetoInterseccion.point);
+            voxel.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        if (objetoInterseccion.face.normal.z == -1) {
+            Ficha.position.copy(objetoInterseccion.point).add(objetoInterseccion.face.normal);
+            Ficha.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+            Ficha.position.y = Ficha.position.y - 0.75;
+
+            voxel.position.copy(objetoInterseccion.point).add(objetoInterseccion.face.normal);
+            voxel.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        if (objetoInterseccion.face.normal.z == 1) {
+            Ficha.position.copy(objetoInterseccion.point);
+            Ficha.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+            Ficha.position.y = Ficha.position.y - 0.75;
+            
+            voxel.position.copy(objetoInterseccion.point);
+            voxel.position.divideScalar(1).floor().multiplyScalar(1).addScalar(0.5);
+        }
+        scene.add(voxel);
+        scene.add(Ficha);
+        objetos.push(voxel);
+    }
+    render();
+}
+   </script>
+</body>
+
+</html>
