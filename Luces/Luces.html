@@ -1,0 +1,568 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>Lucees</title>
+        <style>
+            html, body { margin: 0; padding: 0; overflow: hidden; }
+            #info {
+                position: absolute;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
+                color: #FFFFFF;
+            }
+        </style>
+    </head>
+    <body>
+         <div id="info"> <br/>
+        </div>
+        
+    <script src="js/three.js"></script>
+    <script src="js/controls/OrbitControls.js"></script>
+     <script src="js/csg.js"></script>
+    <script src="js/THREE.CSG.js"></script>
+        
+    <script>
+		var scene, aspect, camera, renderer;
+	       var startTime = Date.now();
+        
+        
+        
+        // VARIABLES DE UBICACION PARA USAR EN TECLAS
+		
+		init();
+		animate();
+	
+		function init(){
+			scene = new THREE.Scene();
+			aspect = window.innerWidth / window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+			controls = new THREE.OrbitControls( camera, renderer.domElement );	  			
+			
+            
+            
+            //ACCIONES REALIZADAS POR TECLADO
+			
+//ELEMENTOS COMUNES
+            var size = 30;
+            var arrowSize = 1;
+            var divisions = size;
+            var origin = new THREE.Vector3(0, 0, 0);
+            var x = new THREE.Vector3(1, 0, 0);
+            var y = new THREE.Vector3(0, 1, 0);
+            var z = new THREE.Vector3(0, 0, 1);
+            var color = new THREE.Color(0x333333);
+            var colorR = new THREE.Color(0xAA3333);
+            var colorG = new THREE.Color(0x33AA33);
+            var colorB = new THREE.Color(0x333366);
+
+  /*         //CREAR LAS GRILLAS PARA EL ESCENARIO
+            var axesHelper = new THREE.AxesHelper(size);
+            scene.add(axesHelper);
+
+            var gridHelperXZ = new THREE.GridHelper(size, divisions, color, color);
+            scene.add(gridHelperXZ);
+
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXZ.rotateOnWorldAxis(y, THREE.Math.degToRad(90));
+            */
+     //CREAR ILUMINACIÓN
+    ambientLight = new THREE.AmbientLight(0x101693, 0.7);
+    scene.add(ambientLight);
+
+    var pointLight = new THREE.PointLight(0x9410e7, 1.7, 20);
+    pointLight.position.set(9, 8, 0);  
+    scene.add(pointLight);
+            
+    var pointLight = new THREE.PointLight(0x07d1d5, 1.7, 10);
+    pointLight.position.set(5, 10, -19.5);  
+    scene.add(pointLight);
+    
+    var pointLight = new THREE.PointLight(0x07d1d5, 1.7, 10);
+    pointLight.position.set(5, 10, 19.5);  
+    scene.add(pointLight);
+           
+    var directionalLight = new THREE.DirectionalLight( 0x2e0dbd, 0.5 );
+    directionalLight.position.set(20, 0.1, 0);
+    scene.add( directionalLight );       
+    
+ 
+  var spotLightA = new THREE.SpotLight( 0xfc2254, 3, 10);
+  var spotLightA1 = new THREE.SpotLight( 0xfc2254, 3, 10);
+  var spotLightB = new THREE.SpotLight( 0x07d1d5, 2, 10); 
+  var spotLightB1 = new THREE.SpotLight( 0x07d1d5, 2, 10);
+  var spotLightC = new THREE.SpotLight( 0xfb04f1, 2, 10);
+  var spotLightD = new THREE.SpotLight( 0xca8716, 4, 15);
+  var spotLightD1 = new THREE.SpotLight( 0xca8716, 1, 10);
+            
+  scene.add( spotLightA );
+  scene.add( spotLightA1 );
+  scene.add( spotLightB );
+  scene.add( spotLightB1 );
+  scene.add( spotLightC );
+  scene.add( spotLightD );
+  scene.add( spotLightD1 );
+  
+var sphere = new THREE.SphereBufferGeometry( 0.5, 16, 8 );
+var sphere1 = new THREE.SphereBufferGeometry( 0.1, 16, 8 );
+
+light1 = new THREE.PointLight( 0xca8716, 2, 10 );
+light2 = new THREE.PointLight( 0xffffff, 2, 5);
+light3 = new THREE.PointLight( 0xffffff, 2, 5);
+light4 = new THREE.PointLight( 0xffffff, 2, 5);
+light5 = new THREE.PointLight( 0xffffff, 2, 5);
+light6 = new THREE.PointLight( 0xffffff, 2, 5);
+light7 = new THREE.PointLight( 0xffffff, 2, 5);
+light8 = new THREE.PointLight( 0xffffff, 2, 5);
+light9 = new THREE.PointLight( 0xffffff, 2, 5);
+light10 = new THREE.PointLight( 0xffffff, 2, 5);
+light11 = new THREE.PointLight( 0xffffff, 2, 5);
+light12 = new THREE.PointLight( 0xffffff, 2, 5);
+light13 = new THREE.PointLight( 0xffffff, 2, 5);
+            
+light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: 0xca8716 } ) ) );
+            
+light2.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+    
+light3.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+            
+light4.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+            
+light5.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+            
+light6.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+            
+light7.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+			
+light8.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+    
+light9.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+            
+light10.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+            
+light11.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+            
+light12.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+            
+light13.add( new THREE.Mesh( sphere1, new THREE.MeshBasicMaterial( { color: 0xffffff } ) ) );
+light1.position.y=8; 
+
+light2.position.x=-14.5; 
+light2.position.y=20; 
+light2.position.z=2; 
+            
+light3.position.x=-14.5; 
+light3.position.y=21; 
+light3.position.z=15;   
+            
+light4.position.x=-14.5; 
+light4.position.y=22; 
+light4.position.z=-15;   
+            
+light5.position.x=-14.5; 
+light5.position.y=19; 
+light5.position.z=10;   
+            
+light6.position.x=-14.5; 
+light6.position.y=18;
+light6.position.z=-10;   
+            
+light7.position.x=-14.5; 
+light7.position.y=17; 
+light7.position.z=5;   
+            
+light8.position.x=-14.5; 
+light8.position.y=18; 
+light8.position.z=17; 
+            
+light9.position.x=-14.5; 
+light9.position.y=16; 
+light9.position.z=1;   
+            
+light10.position.x=-14.5; 
+light10.position.y=17; 
+light10.position.z=-17;   
+            
+light11.position.x=-14.5; 
+light11.position.y=21; 
+light11.position.z=12;   
+            
+light12.position.x=-14.5; 
+light12.position.y=23;
+light12.position.z=-3;   
+            
+light13.position.x=-14.5; 
+light13.position.y=24; 
+light13.position.z=4;  
+            
+
+scene.add( light1 );
+scene.add( light2 );           
+scene.add( light3 );   
+scene.add( light4 );
+scene.add( light5 );           
+scene.add( light6 );
+scene.add( light7 );
+scene.add( light8 );           
+scene.add( light9 );   
+scene.add( light10 );
+scene.add( light11 );           
+scene.add( light12 );
+scene.add( light13 );
+     
+//TEXTURAS
+
+  var textureLoader = new THREE.TextureLoader();
+  ParedA= textureLoader.load("Texturas/pared.jpg");
+Piso= textureLoader.load("Texturas/floor.jpg");
+            
+ //CREAR LAS GEOMETRÍAS
+            
+
+       
+var	matFloor = new THREE.MeshStandardMaterial({color:0x080e45, normalMap: Piso});
+var	matPared = new THREE.MeshBasicMaterial({color:0xfaceb8});
+var	matPared1 = new THREE.MeshStandardMaterial({color:0x000000});
+var matBox = new THREE.MeshStandardMaterial({ color:0xedd8ab, normalMap: ParedA });
+var matBox1 = new THREE.MeshPhongMaterial({color:0xedd8ab});
+var matCar = new THREE.MeshStandardMaterial({ color:0xca162e,metalness: 0.7});
+var matLlanta = new THREE.MeshStandardMaterial({ color:0x8bf286,metalness: 0.7});
+var matLuz = new THREE.MeshBasicMaterial({ color:0xfd86a2});
+var matLuz1 = new THREE.MeshBasicMaterial({ color:0x61f7fa});
+var matLuz2 = new THREE.MeshBasicMaterial({ color:0xfd91f9});
+var matLuz3 = new THREE.MeshBasicMaterial({ color:0xffffff});
+            
+var geoFloor = new THREE.PlaneGeometry(30,50, 30,30);
+var geoPlane = new THREE.PlaneGeometry( 50,30, 50, 50 );
+var geoPared = new THREE.PlaneGeometry(8,8,8,8);
+var geoBox = new THREE.BoxGeometry(10, 12, 10);
+var geoBox1 = new THREE.BoxGeometry(13, 8, 40);
+var geoBox2 = new THREE.BoxGeometry(13, 10, 10);
+var geoBox3 = new THREE.BoxGeometry(8, 8, 8);
+var geoCar = new THREE.BoxGeometry(4, 2, 8);
+var geoCar1 = new THREE.BoxGeometry(3.5, 2, 5.5);
+var geoLlanta =  new THREE.TorusGeometry( 0.7, 0.3, 11, 100 );
+var geoLuz = new THREE.CylinderGeometry( 0.1, 0.1, 9, 35 );
+var geoEsfera =new THREE.SphereGeometry(.4,30,30);
+var geoEsfera1 =new THREE.SphereGeometry(.5,30,30);
+var geoLadrillo =new THREE.PlaneGeometry(7.5,8,7.5,8);
+var geoLadrillo1 =new THREE.PlaneGeometry(13,40,13,40);
+var geoLadrillo2 =new THREE.PlaneGeometry(9,40,9,40); 
+var geoLadrillo3 =new THREE.PlaneGeometry(3.62,12,3.62,12);
+var geoLadrillo4 =new THREE.PlaneGeometry(4,12,4,12);
+var geoLadrillo5 =new THREE.PlaneGeometry(9,4,9,4);
+var geoLadrillo6 =new THREE.PlaneGeometry(10,10,10,10);
+
+            
+var Floor = new THREE.Mesh(geoFloor, matFloor);
+var Pared = new THREE.Mesh(geoPared, matPared);
+var Plane = new THREE.Mesh( geoPlane, matPared1 );
+var Box = new THREE.Mesh(geoBox, matBox);
+var Box1 = new THREE.Mesh(geoBox1, matBox);
+var Box2 = new THREE.Mesh(geoBox2, matBox);
+var Box3 = new THREE.Mesh(geoBox2, matBox);
+var Box4 = new THREE.Mesh(geoBox3, matBox);
+var Car = new THREE.Mesh(geoCar, matCar);
+var Car1 = new THREE.Mesh(geoCar1, matCar);
+var Llanta = new THREE.Mesh(geoLlanta, matLlanta);
+var Llanta1 = new THREE.Mesh(geoLlanta, matLlanta);
+var Llanta2 = new THREE.Mesh(geoLlanta, matLlanta);
+var Llanta3 = new THREE.Mesh(geoLlanta, matLlanta);
+var LuzA = new THREE.Mesh(geoLuz, matLuz);
+var LuzA1 = new THREE.Mesh(geoLuz, matLuz);
+var LuzB = new THREE.Mesh(geoLuz, matLuz1);
+var LuzB1 = new THREE.Mesh(geoLuz, matLuz1);
+var LuzC= new THREE.Mesh(geoLuz, matLuz2);
+var LuzC1 = new THREE.Mesh(geoLuz, matLuz2);
+var Ladrillo = new THREE.Mesh(geoLadrillo, matBox);
+var Ladrillo1 = new THREE.Mesh(geoLadrillo, matBox);
+var Ladrillo2 = new THREE.Mesh(geoLadrillo1, matBox);
+var Ladrillo3 = new THREE.Mesh(geoLadrillo2, matBox);
+var Ladrillo4 = new THREE.Mesh(geoLadrillo3, matBox);
+var Ladrillo5 = new THREE.Mesh(geoLadrillo4, matBox);
+var Ladrillo6 = new THREE.Mesh(geoLadrillo5, matBox);
+var Ladrillo7 = new THREE.Mesh(geoLadrillo5, matBox);
+var Ladrillo8 = new THREE.Mesh(geoLadrillo6, matBox);
+var Ladrillo9 = new THREE.Mesh(geoLadrillo6, matBox);
+var Ladrillo10 = new THREE.Mesh(geoLadrillo6, matBox);
+            
+var Esfera =new THREE.Mesh(geoEsfera,matLuz1);
+var Esfera1 =new THREE.Mesh(geoEsfera,matLuz1);
+var Esfera2 =new THREE.Mesh(geoEsfera1,matLuz3);
+var Esfera3 =new THREE.Mesh(geoEsfera,matLuz1);
+var Esfera4 =new THREE.Mesh(geoEsfera,matLuz1);
+            
+Floor.rotation.x -= Math.PI / 2;
+            
+Box.position.x=-4;
+Box.position.y=6;
+Box.rotation.y=15;
+    
+Pared.position.x=-2.6;
+Pared.position.y=7.95;
+Pared.position.z=-0.13;
+Pared.rotation.x=-4.712;
+Pared.rotation.z=13.27;
+            
+Plane.rotation.y=-4.68;
+Plane.position.x=-16;
+Plane.position.y=15;
+
+
+Box1.position.x=-9;
+Box1.position.y=4;
+
+Box2.position.x=-5;           
+Box2.position.y=5;
+Box2.position.z=17;
+Box2.rotation.y=6;
+            
+Box3.position.x=-5;           
+Box3.position.y=5;
+Box3.position.z=-17;
+Box3.rotation.y=-6;
+
+Box4.position.x=0;
+Box4.position.y=4;
+Box4.rotation.y=15;
+            
+Car.position.x=9;          
+Car.position.y=1.7; 
+
+Car1.position.x=9;          
+Car1.position.y=3; 
+Car1.position.z=-0.5; 
+
+Llanta.position.x=10.3;
+Llanta.position.y=0.5;
+Llanta.position.z=1.8;          
+Llanta.rotation.y=1.5;
+            
+Llanta1.position.x=7.65;
+Llanta1.position.y=0.5;
+Llanta1.position.z=1.8;          
+Llanta1.rotation.y=1.5;
+            
+Llanta2.position.x=10.3;
+Llanta2.position.y=0.5;
+Llanta2.position.z=-1.85;          
+Llanta2.rotation.y=1.5;
+            
+Llanta3.position.x=7.65;
+Llanta3.position.y=0.5;
+Llanta3.position.z=-1.85;          
+Llanta3.rotation.y=1.5;
+
+LuzA.position.x=-0.3;
+LuzA.position.y=11.5;
+LuzA.position.z=-3.5;
+LuzA.rotation.x=-4.7;
+LuzA.rotation.z=-4;
+
+LuzA1.position.x=0.2;
+LuzA1.position.y=11.5;
+LuzA1.position.z=2.9;
+LuzA1.rotation.x=-4.7;
+LuzA1.rotation.z=3.85;
+            
+LuzB.position.x=-2.3;
+LuzB.position.y=7.5;
+LuzB.position.z=9;
+LuzB.rotation.x=-4.7;
+
+LuzB1.position.x=-2.3;
+LuzB1.position.y=7.5;
+LuzB1.position.z=-9;
+LuzB1.rotation.x=-4.7;
+
+LuzC.position.x=0.2;
+LuzC.position.y=10;
+LuzC.position.z=2.9;
+LuzC.rotation.x=-4.7;
+LuzC.rotation.z=3.85;
+
+LuzC1.position.x=-0.3;
+LuzC1.position.y=10;
+LuzC1.position.z=-3.5;
+LuzC1.rotation.x=-4.7;
+LuzC1.rotation.z=-4;
+
+Ladrillo.rotation.y=1.57;
+Ladrillo.position.x=-2.4;
+Ladrillo.position.y=4;
+Ladrillo.position.z=9;
+ 
+Ladrillo1.rotation.y=1.57;
+Ladrillo1.position.x=-2.4;
+Ladrillo1.position.y=4;
+Ladrillo1.position.z=-8.9;
+
+Ladrillo2.rotation.y=3.14;
+Ladrillo2.rotation.x=-4.712;
+Ladrillo2.position.x=-8.97;       
+Ladrillo2.position.y=8.1;  
+    
+Ladrillo3.rotation.y=-1.57;
+Ladrillo3.rotation.x=-4.712;
+Ladrillo3.position.x=-15.6; 
+Ladrillo3.position.y=4.2;  
+            
+Ladrillo4.position.x=-2.2;
+Ladrillo4.position.y=6;
+Ladrillo4.position.z=5.7; 
+Ladrillo4.rotation.y=0.86;
+            
+Ladrillo5.position.x=-3;
+Ladrillo5.position.y=6;
+Ladrillo5.position.z=-5.88; 
+Ladrillo5.rotation.y=2.4;
+            
+Ladrillo6.position.x=-0.39;
+Ladrillo6.position.y=10;
+Ladrillo6.position.z=-3.5;
+Ladrillo6.rotation.y=2.435;
+
+Ladrillo7.position.x=0.16;
+Ladrillo7.position.y=10;
+Ladrillo7.position.z=2.85;
+Ladrillo7.rotation.y=0.864;
+ 
+Ladrillo8.rotation.y=3.14;
+Ladrillo8.rotation.x=-4.712;
+Ladrillo8.rotation.z=0.86;
+Ladrillo8.position.x=-4;       
+Ladrillo8.position.y=12.1;  
+    
+Ladrillo9.position.x=-7.31;
+Ladrillo9.position.y=7.1;
+Ladrillo9.position.z=3.85;
+Ladrillo9.rotation.y=5.56;
+
+Ladrillo10.position.x=-7.82;
+Ladrillo10.position.y=7.1;
+Ladrillo10.position.z=-3.25;
+Ladrillo10.rotation.y=10.285;
+            
+spotLightA.position.x=5;
+spotLightA.position.y=14;
+spotLightA.position.z=4;
+ 
+spotLightA1.position.x=5;
+spotLightA1.position.y=14;
+spotLightA1.position.z=-5;
+
+spotLightB.position.x=-3;
+spotLightB.position.y=15;
+spotLightB.position.z=10;
+            
+spotLightB1.position.x=-3;
+spotLightB1.position.y=15;
+spotLightB1.position.z=-10;
+ 
+spotLightC.position.x=-1.7;
+spotLightC.position.y=12;
+
+spotLightD.position.x=-2;
+spotLightD.position.y=11;
+  
+spotLightD1.position.y=-5;
+            
+
+
+Esfera.position.x=-3.5;
+Esfera.position.y=9.62;
+Esfera.position.z=-12.2;
+
+Esfera1.position.x=-3.5;
+Esfera1.position.y=9.62;
+Esfera1.position.z=12.2;
+            
+Esfera2.position.x=0;
+Esfera2.position.y=8;
+Esfera2.position.z=0;
+
+Esfera3.position.x=1.1;
+Esfera3.position.y=9.5;
+Esfera3.position.z=19;
+
+Esfera4.position.x=1.1;
+Esfera4.position.y=9.5;
+Esfera4.position.z=-19;
+
+
+//Convertir a CSG
+
+var BoxCSG = THREE.CSG.fromMesh(Box);
+var Box1CSG = THREE.CSG.fromMesh(Box1);
+var Box4CSG = THREE.CSG.fromMesh(Box4);
+  //hacer Operaciones CSG
+
+var result1 = BoxCSG.union(Box1CSG).subtract(Box4CSG);
+
+//compilar
+var Cubo = THREE.CSG.toMesh(result1);
+Cubo.material=matBox1; 
+            
+scene.add(Floor);      
+scene.add(Pared); 
+scene.add( Plane );
+scene.add(Box2);
+scene.add(Box3);
+scene.add(Cubo);
+scene.add(Car);
+scene.add(Car1);
+scene.add(Llanta); 
+scene.add(Llanta1);
+scene.add(Llanta2);
+scene.add(Llanta3);
+scene.add(LuzA);
+scene.add(LuzA1);
+scene.add(LuzB);
+scene.add(LuzB1);
+scene.add(LuzC);
+scene.add(LuzC1);
+scene.add(Esfera);
+scene.add(Esfera1);
+scene.add(Esfera2);
+scene.add(Esfera3);
+scene.add(Esfera4);    
+scene.add(Ladrillo);
+scene.add(Ladrillo1);
+scene.add(Ladrillo2);   
+scene.add(Ladrillo3);
+scene.add(Ladrillo4);
+scene.add(Ladrillo5);
+scene.add(Ladrillo6);
+scene.add(Ladrillo7);
+scene.add(Ladrillo8);
+scene.add(Ladrillo9);
+scene.add(Ladrillo10);
+// CONFIGURACIONES ADICIONALES DE CAMARA CON RESPECTO A LA DISTANCIA DONDE SE OBSERVA 
+        
+    camera.position.x = 50;
+    camera.position.y = 11;
+    camera.position.z = 13;
+    camera.lookAt( origin );
+            
+			renderer.render( scene, camera );
+			}
+    
+    function animate() {
+        render();
+        requestAnimationFrame( animate );
+    }
+    
+    function render(){
+        var dtime = Date.now()-startTime;
+
+
+		//CAMARA ENFOCANDO ORIGEN
+        camera.lookAt( 0, 0, 0 );
+        renderer.render( scene, camera );
+    }
+    </script>
+  </body>
+</html>
